@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+
+  horas-unir:
+    build: horas-unir/.
+    container_name: horas-unir
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+      LOGIN_USER: "${LOGIN_USER}"
+      LOGIN_PASSWORD: "${LOGIN_PASSWORD}"
+      URL1: "${URL1}"
+      URL2: "${URL2}"
+      DISABLE_HEADLESS: "1"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
