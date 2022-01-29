@@ -12,6 +12,6 @@ services:
       LOGIN_PASSWORD: "${LOGIN_PASSWORD}"
       URL1: "${URL1}"
       URL2: "${URL2}"
-      DISABLE_HEADLESS: "1"
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+      #DISABLE_HEADLESS: "1"
+    #stdin_open: true # docker run -i
+    #tty: true        # docker run -t
