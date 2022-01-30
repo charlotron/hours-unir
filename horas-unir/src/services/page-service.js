@@ -1,38 +1,51 @@
 const puppeteer = require('puppeteer');
 
-const COOKIES_DISCLAMER_SELECTOR="#truste-consent-button";
-const LOGIN_URL="https://micampus.unir.net/";
-const LOGIN_INPUT_USER_SELECTOR="input[name=Username]";
-const LOGIN_INPUT_PWD_SELECTOR="input[name=Password]";
-const LOGIN_INPUT_SUBMIT="#btn-acceder";
+const COOKIES_DISCLAMER_SELECTOR = "#truste-consent-button";
+const LOGIN_URL = "https://micampus.unir.net/";
+const LOGIN_INPUT_USER_SELECTOR = "input[name=Username]";
+const LOGIN_INPUT_PWD_SELECTOR = "input[name=Password]";
+const LOGIN_INPUT_SUBMIT = "#btn-acceder";
 
-module.exports=class PageService{
-    constructor(puppeteerOpts){
-        this.puppeteerOpts=puppeteerOpts;
+module.exports = class PageService {
+    constructor(puppeteerOpts) {
+        this.puppeteerOpts = puppeteerOpts;
     }
 
-    async init(){
-        const browser = await puppeteer.launch(this.puppeteerOpts);
+    async init() {
+        try {
+            console.log("Initializing puppeteer with options: ",this.puppeteerOpts);
+            const browser = await puppeteer.launch(this.puppeteerOpts);
 
-        console.log("Opening new tab");
-        this.page = await browser.newPage();
+            console.log("Opening new tab in chromium");
+            this.page = await browser.newPage();
+        } catch (e) {
+            console.error("There was an error while initializing puppeteer or creating a new page", e);
+            throw e;
+        }
     }
 
-    async login(login_user,login_pwd){
-        console.log("Opening login..");
-        await this.goto(LOGIN_URL);
+    async login(login_user, login_pwd) {
+        try {
+            console.log(`Opening login page: (url: ${LOGIN_URL})`);
+            await this.goto(LOGIN_URL);
 
-        console.log("Clicking on cookies disclamer..");
-        await this.clickOnElementBySelector(COOKIES_DISCLAMER_SELECTOR);
+            console.log(`Clicking on cookies disclamer: (selector: ${COOKIES_DISCLAMER_SELECTOR})`);
+            await this.clickOnElementBySelector(COOKIES_DISCLAMER_SELECTOR);
 
-        //Fill login
-        console.log("Filling user/pwd in form..");
-        await this.fillInput(LOGIN_INPUT_USER_SELECTOR, login_user);
-        await this.fillInput(LOGIN_INPUT_PWD_SELECTOR, login_pwd);
-        console.log("Submitting form..");
-        await this.clickOnElementBySelector(LOGIN_INPUT_SUBMIT);
-        console.log("Waiting for page load after submit..");
-        await this.waitForPageLoaded();
+            //Fill login
+            console.log(`Filling user in form: (selector: ${LOGIN_INPUT_USER_SELECTOR}, value: ${login_user})`);
+            await this.fillInput(LOGIN_INPUT_USER_SELECTOR, login_user);
+            console.log(`Filling pwd in form: (selector=${LOGIN_INPUT_PWD_SELECTOR}, value: **********)`);
+            await this.fillInput(LOGIN_INPUT_PWD_SELECTOR, login_pwd);
+            console.log(`Submitting form: (selector: ${LOGIN_INPUT_SUBMIT}`);
+            await this.clickOnElementBySelector(LOGIN_INPUT_SUBMIT);
+            console.log("Waiting for page load after submit..");
+            await this.waitForPageLoaded();
+            console.log("Loaded OK..");
+        } catch (e) {
+            console.error("There was an error while logging in", e);
+            throw e;
+        }
     }
 
     async clickOnElementBySelector(selector, x = null, y = null) {
@@ -55,11 +68,21 @@ module.exports=class PageService{
     }
 
     async goto(url) {
-        return this.page.goto(url, {waitUntil: 'networkidle0',});
+        try {
+            return this.page.goto(url, {waitUntil: 'networkidle0',});
+        } catch (e) {
+            console.error(`There was an opening url: ${url}`, e);
+            throw e;
+        }
     }
 
     async waitForPageLoaded() {
+        try {
         return this.page.waitForNavigation({waitUntil: 'networkidle2'});
+        } catch (e) {
+            console.error('Error waiting for the page to be fully loaded' , e);
+            throw e;
+        }
     }
 
     async fillInput(selector, text) {

@@ -14,13 +14,13 @@ if (typeof process.env.DISABLE_HEADLESS !== "undefined" && process.env.DISABLE_H
     console.debug("Headless mode disabled (envir: DISABLE_HEADLESS set to 1)")
 else
     console.debug("Headless mode enabled (envir: DISABLE_HEADLESS not set or set to any other than 1)")
-if(typeof process.env.REBOOT_AFTER_MINS==="undefined")
+if (typeof process.env.REBOOT_AFTER_MINS === "undefined")
     console.debug("Max minutes running before restart set (envir: REBOOT_AFTER_MINS)")
 else
     console.debug(`Max minutes running before restart set to ${process.env.REBOOT_AFTER_MINS} (envir: REBOOT_AFTER_MINS)`)
 
 //-------------- PREPARE ENV CONSTANTS
-const REBOOT_AFTER_MINS=process.env.REBOOT_AFTER_MINS;
+const REBOOT_AFTER_MINS = process.env.REBOOT_AFTER_MINS;
 const LOGIN_USER = process.env.LOGIN_USER;
 const LOGIN_PASSWORD = process.env.LOGIN_PASSWORD;
 const URL1 = process.env.URL1;
@@ -39,7 +39,7 @@ const PUPPETEER_OPTIONS = {
 
 //------------- MAIN PROG
 async function main() {
-    console.log("Program started =====")
+    console.log("======= Program started =====")
 
     //Configure service
     const pageService = new PageService(PUPPETEER_OPTIONS)
@@ -52,9 +52,9 @@ async function main() {
 
     //Alternate between pages
     let i = 0;
-    let start_date=new Date();
-    while (!REBOOT_AFTER_MINS || !Utils.hasElapsedMinutes(start_date,REBOOT_AFTER_MINS)) { //If none of these is true, intentional infinite loop till forced close
-        console.log(`Browsing to page: ${URLS[i]}`);
+    let start_date = new Date();
+    while (!REBOOT_AFTER_MINS || !Utils.hasElapsedMinutes(start_date, REBOOT_AFTER_MINS)) { //If none of these is true, intentional infinite loop till forced close
+        console.log(`Browsing to url (url: ${URLS[i]})`);
         await pageService.goto(URLS[i]);
         await Utils.waitRandomTime();
         i = (i + 1) % URLS.length;
@@ -62,10 +62,14 @@ async function main() {
 
     //If this point is reached process should finish.
     console.log(`Running for more than ${REBOOT_AFTER_MINS} minutes, so its time to shutdown/reboot`);
-    process.exit();
+    console.log("======= Program finishing/rebooting =====");
 }
 
 //------------- RUN PROG
-main().catch(e => {
-    throw e;
-})
+main()
+    .then(()=>process.exit(0))
+    .catch(e => {
+        console.error(e);
+        console.error("======= Program prematurely finished due to errors =======");
+        process.exit(1)
+    })
