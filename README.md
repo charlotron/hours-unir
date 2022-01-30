@@ -16,7 +16,7 @@ services:
       LOGIN_PASSWORD: "somepwd"
       URL1: "https://micampus.unir.net/courses/24329/pages/tema-1-por-que-devops?module_item_id=410195"
       URL2: "https://micampus.unir.net/courses/24329/pages/tema-1-entrevista-a-abel-lorenzo-service-delivery-manager-en-heineken-espana?module_item_id=410196"
-      REBOOT_AFTER_MINS: 120
+      REBOOT_AFTER_MINS: 120  #Reboot after 2 hours (i have restart:unless-stopped, so it will be restarting each two hours in loop to prevent timeout bugs, etc..)
 ```
 Then in the same folder, execute:
 ```
@@ -29,7 +29,6 @@ docker-compose up -d
 
 OPTIONAL: You can modify/add the following optional environment variables
 ```
-      REBOOT_AFTER_MINS: 120            # Will shutdown the bot after 2hours (if no errors were thrown). If you have the option in docker-compose.yml "restart", it will reboot. Defaults to disabled if not set.
       MIN_WAIT_TIME_SECS: 30            # This will set the minimun wait time between page jumps on URL1/2 (this is to prevent detecting time patterns). Defaults to 30. 
       DEFAULT_MAX_WAIT_TIME_SECS: 50    # This will set the maximun wait time between page jumps on URL1/2 (this is to prevent detecting time patterns). Defaults to 50.
 ```
