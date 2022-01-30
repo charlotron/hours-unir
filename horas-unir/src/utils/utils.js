@@ -1,8 +1,10 @@
-const MIN_WAIT_TIME_SECS = 30;
-const MAX_WAIT_TIME_SECS = 50;
+const DEFAULT_MIN_WAIT_TIME_SECS = 30;
+const DEFAULT_MAX_WAIT_TIME_SECS = 50;
 
 async function waitRandomTime() {
-    const waitForSecs = randomIntFromInterval(MIN_WAIT_TIME_SECS, MAX_WAIT_TIME_SECS);
+    const waitForSecs = randomIntFromInterval(
+        process.env.MIN_WAIT_TIME_SECS || DEFAULT_MIN_WAIT_TIME_SECS,
+        process.env.MAX_WAIT_TIME_SECS || DEFAULT_MAX_WAIT_TIME_SECS);
     return delay(waitForSecs * 1000);
 }
 
@@ -14,14 +16,12 @@ async function delay(ms) {
     return new Promise(res => setTimeout(res, ms));
 }
 
-function hasPassedNHours(date, hours){
-        const hour= 1000 * 60 * 60 * hours;
-        const hourago= Date.now() - hour;
-
-        return date > hourago;
+function hasElapsedMinutes(date, minutes) {
+    const limit_date=new Date(date.getTime() + parseInt(minutes) * 60 * 1000);
+    return new Date() > limit_date;
 }
 
-module.exports= {
+module.exports = {
     waitRandomTime,
-    hasPassedNHours
+    hasElapsedMinutes
 }
